@@ -1,12 +1,18 @@
-import random
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+'''
+   A python3 implementation of Particle Swarm Optimisation
+'''
 import sys
 import time
-from math import sin,cos,pi
+import random
+from math import cos
+import matplotlib.pyplot as plt
 import anim
 
 class Swarm(object):
+    '''
+        The main Swarm class consists of a collection of particles,
+        and contains routines for advancing the swarm.
+    '''
 
     def __init__(self, m, n, f, b_lo, b_up, w=0.9, phi_p=0.7, phi_g=0.7):
         self.m = m   # int - swarm size
