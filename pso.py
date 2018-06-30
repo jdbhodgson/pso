@@ -94,20 +94,20 @@ class Swarm(object):
         animator.xrange_0 = (0, 10)
         animator.yrange_0 = (self.best[1]/10, self.best[1])
         animator.yscale = 'log'
-        def data_gen(swarm, t=0):
+        def data_gen(t=0):
             '''Completes one PSO step, and outputs history'''
             i = 0
 
             yield t, self.best[1]
             while i < n_steps:
-                swarm.update()
+                self.update()
                 i += 1
                 t += 1
-                yield t, swarm.best[1]
+                yield t, self.best[1]
 
-        animator.data_gen = data_gen(self)
+        #animator.data_gen = data_gen(self)
 
-        animator.animate()
+        animator.animate(data_gen)
 
     def plot(self, dims=(0, 1)):
         ''' Shows a scatter plot for all particles in the swarm for
@@ -204,7 +204,7 @@ def benchmark(n_steps):
     random.seed(12)
     swarm = test_swarm()
     start_time = time.time()
-    swarm.run(n_steps)
+    swarm.run_anim(n_steps)
 
     print('Swarm min = %e', swarm.best[1])
     end_time = round(time.time()-start_time, 4)
@@ -233,4 +233,3 @@ def test_function(variables):
     return (4-cos(x)-cos(y)
             -cos(z)-cos(t)
             +(x**2+y**2+z**2+t**2)/100.)
- 

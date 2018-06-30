@@ -60,15 +60,23 @@ class Animator(object):
 
         return self.line,
 
-    def animate(self):
+    def animate(self, data_gen):
         '''Plots and shows the animation'''
-        animation.FuncAnimation(self.fig, self.run,
-                                data_gen, blit=False,
-                                interval=10, repeat=False,
-                                init_func=self.init_axes)
-        plt.show()
+        ani = animation.FuncAnimation(self.fig, self.run,
+                                      data_gen, blit=False,
+                                      interval=10, repeat=False,
+                                      init_func=self.init_axes)
+        plt.show(ani)
 
-def data_gen(t=0):
+def test():
+    '''
+       Test function. Run anim.test() to ensure anim.py
+       is able to produce an animation.
+    '''
+    test_anim = Animator()
+    test_anim.animate(test_data_gen)
+
+def test_data_gen(t=0):
     '''generates data for a test function'''
     cnt = 0
     while cnt < 1000:
