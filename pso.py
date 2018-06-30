@@ -20,7 +20,7 @@ class Swarm(object):
     def __init__(self, swarm_size, p_dim, function, bounds):
         config = configparser.ConfigParser()
         config.read('params.cfg')
-        hyperparams = [config['DEFAULT'][key]
+        hyperparams = [float(config['DEFAULT'][key])
                        for key in config['DEFAULT']]
 
         self.swarm_size = swarm_size   # int - swarm size
@@ -140,7 +140,7 @@ class Particle(object):
 
         self.vmax = [0.2*swarm.range[i] for i in range(p_dim)]
         self.p_best = (list(self.x), swarm.function(self.x))
-        if (not swarm.best) or  self.p_best[1] < swarm.best[1]:
+        if (not swarm.best[1]) or  self.p_best[1] < swarm.best[1]:
             swarm.best = self.p_best
         self.g_best = self.p_best
         self.omega = hyperparams[0]
@@ -159,7 +159,6 @@ class Particle(object):
         for i in range(self.swarm.p_dim):
             r_p = random.random()
             r_g = random.random()
-
             self.v[i] = (self.omega*self.v[i]
                          + r_p*self.phi_p*(self.p_best[0][i]-self.x[i])
                          + r_g*self.phi_g*(self.g_best[0][i]-self.x[i]))
