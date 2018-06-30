@@ -204,7 +204,7 @@ def benchmark(n_steps):
     random.seed(12)
     swarm = test_swarm()
     start_time = time.time()
-    swarm.run_anim(n_steps)
+    swarm.run(n_steps)
 
     print('Swarm min = %e', swarm.best[1])
     end_time = round(time.time()-start_time, 4)
