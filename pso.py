@@ -14,7 +14,12 @@ class Swarm(object):
         and contains routines for advancing the swarm.
     '''
 
-    def __init__(self, m, n, f, b_lo, b_up, w=0.9, phi_p=0.7, phi_g=0.7):
+    def __init__(self, swarm_size, p_dim, f, b_lo, b_up, hyperparams):
+        config = configparser.ConfigParser()
+        config.read('params.cfg')
+        hyperparams = [config['DEFAULT'][key]
+                       for key in config['DEFAULT']]
+
         self.swarm_size = swarm_size   # int - swarm size
         self.p_dim = p_dim   # int - particle dimension
         self.f = f   # int - minimizing function
@@ -23,7 +28,7 @@ class Swarm(object):
         self.range = [abs(b_up[i]-b_lo[i]) for i in range(n)]
         self.best = (None, None)  # tuple - best value (X, f(X))
 
-        self.particles = [Particle(self, j, w, phi_p, phi_g)
+        self.particles = [Particle(self, j, hyperparams)
                           for j in range(swarm_size)]
         self.history = [self.best[1]]
         # Ring topology
@@ -108,7 +113,7 @@ class Swarm(object):
 
 class Particle(object):
 
-    def __init__(self, swarm, j, w, phi_p, phi_g):
+    def __init__(self, swarm, j, hyperparams):
         self.j = j
         self.swarm = swarm
         p_dim = swarm.p_dim
@@ -122,13 +127,13 @@ class Particle(object):
         if (not swarm.best) or  self.p[1] < swarm.best[1]:
             swarm.best = self.p
         self.g = self.p
-        self.w = w
-        self.phi_p = phi_p
-        self.phi_g = phi_g
+        self.omega = hyperparams[0]
+        self.phi_p = hyperparams[1]
+        self.phi_g = hyperparams[2]
 
     def __repr__(self):
         out = ('<Particle #%d: w=%4.2f, phi_p=%4.2f, phi_g=%4.2f, best=%8.2e>'
-                % (self.j, self.w, self.phi_p, self.phi_g, self.p[1]))
+               % (self.j, self.w, self.phi_p, self.phi_g, self.p[1]))
         return out
 
     def update_v(self):
