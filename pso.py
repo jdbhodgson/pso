@@ -21,11 +21,11 @@ class Swarm(object):
         self.b_lo = b_lo   # list[n] - lower bound
         self.b_up = b_up   # list[n] - upper bound
         self.range = [abs(b_up[i]-b_lo[i]) for i in range(n)]
-        self.best = None   # tuple - best value (X, f(X))
+        self.best = (None, None)  # tuple - best value (X, f(X))
 
         self.particles = [Particle(self, j, w, phi_p, phi_g)
                           for j in range(swarm_size)]
-        self.history=[self.best[1]]
+        self.history = [self.best[1]]
         # Ring topology
         self.groups = [[self.particles[(i+j)%swarm_size]
                         for i in range(-1, 2)]
@@ -34,7 +34,7 @@ class Swarm(object):
 
     def __repr__(self):
         out = ('<Swarm: particles=%d, minimizer=%s, best=%8.2e>'
-                % (self.swarm_size, self.f.__name__, self.best[1]))
+               % (self.swarm_size, self.f.__name__, self.best[1]))
         return out
 
     def update(self):
@@ -63,7 +63,7 @@ class Swarm(object):
             self.update()
             if v:
                 if round(N/500) < 2:
-                    out = '%6.2f%% Complete' % round(100*i/N, 2)             
+                    out = '%6.2f%% Complete' % round(100*i/N, 2)
                     sys.stdout.write('\r' + out)
                     sys.stdout.flush()
                 elif i%round(N/500):
@@ -78,9 +78,9 @@ class Swarm(object):
 
     def run_anim(self, N, v=False):
         a = anim.Animator()
-        a.xrange_0 = (0,10)
-        a.yrange_0 = (self.best[1]/10,self.best[1])
-        a.yscale= 'log'
+        a.xrange_0 = (0, 10)
+        a.yrange_0 = (self.best[1]/10, self.best[1])
+        a.yscale = 'log'
         def data_gen(swarm, t=0):
             i = 0
 
@@ -101,10 +101,10 @@ class Swarm(object):
         x = [p.x[dims[0]] for p in self.particles]
         y = [p.x[dims[1]] for p in self.particles]
 
-        fig,ax =plt.subplots()
-        ax.scatter(x, y)
+        fig, axis = plt.subplots()
+        axis.scatter(x, y)
 
-        plt.show()
+        plt.show(fig)
 
 class Particle(object):
 
@@ -115,7 +115,7 @@ class Particle(object):
         self.x = [random.random()*swarm.range[i]
                   + swarm.b_lo[i] for i in range(p_dim)]
         self.v = [2*random.random()*swarm.range[i]
-                    - swarm.range[i] for i in range(p_dim)]
+                  - swarm.range[i] for i in range(p_dim)]
 
         self.vmax = [0.2*swarm.range[i] for i in range(p_dim)]
         self.p = (list(self.x), swarm.f(self.x))
@@ -138,8 +138,8 @@ class Particle(object):
             r_g = random.random()
 
             self.v[i] = (self.w*self.v[i]
-                        + r_p*self.phi_p*(self.p[0][i]-self.x[i])
-                        + r_g*self.phi_g*(self.g[0][i]-self.x[i]))
+                         + r_p*self.phi_p*(self.p[0][i]-self.x[i])
+                         + r_g*self.phi_g*(self.g[0][i]-self.x[i]))
             if self.v[i] > self.vmax[i]:
                 self.v[i] = self.vmax[i]
             elif self.v[i] < -self.vmax[i]:
@@ -164,7 +164,7 @@ class Particle(object):
         if fx < self.p[1]:
             self.p = (list(self.x), fx)
             if fx < self.swarm.best[1]:
-                self.swarm.best = (list(self.x),fx)
+                self.swarm.best = (list(self.x), fx)
 
     def update(self):
         ''' Updates the particle one PSO step '''
@@ -184,7 +184,7 @@ def benchmark(N):
     startTime = time.time()
     s.run(N)
 
-    print('Swarm min = %e',s.best[1])
+    print('Swarm min = %e', s.best[1])
     endTime = round(time.time()-startTime, 4)
     print('Completed in %f seconds.' % endTime)
     return s
@@ -197,7 +197,7 @@ def test_swarm():
     '''
     s = Swarm(20, 4, test_function,
               [-10 for i in range(4)],
-              [ 10 for i in range(4)])
+              [10 for i in range(4)])
     return s
 
 def test_function(L):
@@ -207,8 +207,8 @@ def test_function(L):
                        +(x^2+y^2+z^2+t^2)/100
         f has a minimum at f([0,0,0,0]) = 0.
     '''
-    x,y,z,t = L
+    x, y, z, t = L
     return (4-cos(x)-cos(y)
-             -cos(z)-cos(t)
-             +(x**2+y**2+z**2+t**2)/100.)
+            -cos(z)-cos(t)
+            +(x**2+y**2+z**2+t**2)/100.)
  
