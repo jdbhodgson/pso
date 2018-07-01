@@ -9,6 +9,13 @@ from scipy.interpolate import splev, splrep
 import matplotlib.pyplot as plt
 import pso
 
+def target_function(s):
+    '''
+        The Target function of which to find the
+        inverse Weierstrass transform
+    '''
+    y = np.tanh(s*0.45)
+    return y
 
 def extend_odd(y):
     '''Creates an odd extention of an array'''
@@ -90,17 +97,25 @@ def plot_data(pos):
     #
     return fig
 
-random.seed(12)
+
+def convert_config_types(config, name):
+    '''
+        Converts the config entries to the appropriate type.
+    '''
+    params = dict(config[name])
+    types = dict(config[name+'_TYPES'])
+    for key in params:
+        if types[key] == 'int':
+            params[key] = int(params[key])
+        elif types[key] == 'float':
+            params[key] = float(params[key])
+    return params
+
+
 
 CONFIG = configparser.ConfigParser()
 CONFIG.read('params.cfg')
-PARAMS = dict(CONFIG['WEIERSTRASS'])
-PARAMS_TYPES = dict(CONFIG['WEIERSTRASS_TYPES'])
-for key in PARAMS:
-    if PARAMS_TYPES[key] == 'int':
-        PARAMS[key] = int(PARAMS[key])
-    elif PARAMS_TYPES[key] == 'float':
-        PARAMS[key] = float(PARAMS[key])
+PARAMS = convert_config_types(CONFIG, 'WEIERSTRASS')
 
 X_RANGE = PARAMS['a_range'] + PARAMS['cutoff']
 x = np.linspace(0, 1, num=PARAMS['num_x']+1)**2 * X_RANGE
@@ -108,13 +123,18 @@ x = x[1:]
 
 A = np.linspace(-PARAMS['a_range'], PARAMS['a_range'],
                 num=PARAMS['num_a'])
-TARGET = np.tanh(A*0.45)
+TARGET = target_function(A)
 
 X_FINE = np.linspace(-X_RANGE, X_RANGE, num=301)
 
-BOUNDS = [[PARAMS['bound_low'] for i in range(PARAMS['num_x'])],
-          [PARAMS['bound_high'] for i in range(PARAMS['num_x'])]]
-SWARM = pso.Swarm(20, PARAMS['num_x'], fitness, BOUNDS)
-SWARM.run_anim(1000)
+SWARM_PARAMS = convert_config_types(CONFIG, 'SWARM')
+
+random.seed(SWARM_PARAMS['seed'])
+
+BOUNDS = [[SWARM_PARAMS['bound_low'] for i in range(PARAMS['num_x'])],
+          [SWARM_PARAMS['bound_high'] for i in range(PARAMS['num_x'])]]
+SWARM = pso.Swarm(SWARM_PARAMS['n_particles'], PARAMS['num_x'],
+                  fitness, BOUNDS)
+SWARM.run_anim(SWARM_PARAMS['n_steps'])
 PLT = plot_data(SWARM.best[0])
 PLT.show()
