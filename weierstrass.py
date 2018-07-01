@@ -75,13 +75,13 @@ def fitness(points):
     return integral
 
 
-def plot_data(pos):
+def plot_data(pos, axis):
     '''
         Converts a list of spline points (pos) to its
         spline representation and plots the resulting curve.
     '''
 
-    fig = plt.figure()
+    #fig = plt.figure()
     y = pos
     if PARAMS['parity'] == 'odd':
         y_ext = extend_odd(y, PARAMS['parity'])
@@ -91,7 +91,7 @@ def plot_data(pos):
     x_ext = extend_odd(x, PARAMS['parity'])
     spline_data = splrep(x_ext, y_ext)
 
-    plt.plot(x, y, 'o', X_FINE, splev(X_FINE, spline_data),
+    axis.plot(x, y, 'o', X_FINE, splev(X_FINE, spline_data),
              '-', color='black')
 
     # if plotSave == 'save':
@@ -104,7 +104,7 @@ def plot_data(pos):
     #
     #    plt.show()
     #
-    return fig
+    return
 
 
 def convert_config_types(config, name):
@@ -155,6 +155,18 @@ BOUNDS = [[SWARM_PARAMS['bound_low'] for i in range(PARAMS['num_x'])],
 SWARM = pso.Swarm(SWARM_PARAMS['n_particles'], PARAMS['num_x'],
                   fitness, BOUNDS)
 
-SWARM.run_anim(SWARM_PARAMS['n_steps'])
-PLT = plot_data(SWARM.best[0])
-plt.show()
+# 1) Run without any visualisation (fastest)
+#SWARM.run(SWARM_PARAMS['n_steps'], verbose=True)
+#fig, axis = plt.subplots()
+#plot_data(SWARM.best[0], axis)
+#plt.show()
+
+# 2) Run with fitness history visualisation (slower)
+#SWARM.run_anim(SWARM_PARAMS['n_steps'])
+#fig, axis = plt.subplots()
+#plot_data(SWARM.best[0], axis)
+#plt.show()
+
+# 3) Run with fitness history visualisation and running best (slowest)
+SWARM.run_anim(SWARM_PARAMS['n_steps'], plot_best=plot_data)
+

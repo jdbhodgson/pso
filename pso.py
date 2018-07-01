@@ -85,12 +85,17 @@ class Swarm(object):
             sys.stdout.write('\r' + out+'\n')
             sys.stdout.flush()
 
-    def run_anim(self, n_steps):
+    def run_anim(self, n_steps, plot_best=None):
         '''
             Advances the swarm by N PSO steps, while
             showing the swarm best history
+            
+            if plot_best is given, it should be a function which
+            takes as arguments a plot axis and a list of points
+            (position of a particle). Then run_anim will plot the
+            best particle along with the history.
         '''
-        animator = anim.Animator()
+        animator = anim.Animator(plot_best=plot_best, swarm=self)
         animator.xrange_0 = (0, 10)
         animator.yrange_0 = (self.best[1]/10, self.best[1])
         animator.yscale = 'log'
