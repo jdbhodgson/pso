@@ -17,6 +17,7 @@ def target_function(t):
     f = np.tanh(t*0.45)
     return f
 
+
 def extend_odd(y, parity):
     '''Creates an odd extention of an array'''
     if parity == 'even':
@@ -90,7 +91,8 @@ def plot_data(pos):
     x_ext = extend_odd(x, PARAMS['parity'])
     spline_data = splrep(x_ext, y_ext)
 
-    plt.plot(x, y, 'o', X_FINE, splev(X_FINE, spline_data), '-', color='black')
+    plt.plot(x, y, 'o', X_FINE, splev(X_FINE, spline_data),
+             '-', color='black')
 
     # if plotSave == 'save':
     #
@@ -118,8 +120,6 @@ def convert_config_types(config, name):
             params[key] = float(params[key])
     return params
 
-
-
 CONFIG = configparser.ConfigParser()
 CONFIG.read('params.cfg')
 PARAMS = convert_config_types(CONFIG, 'WEIERSTRASS')
@@ -145,15 +145,16 @@ if PARAMS['parity'] == 'odd' or PARAMS['parity'] == 'even':
 
 TARGET = target_function(A)
 
-
 SWARM_PARAMS = convert_config_types(CONFIG, 'SWARM')
 
 random.seed(SWARM_PARAMS['seed'])
 
 BOUNDS = [[SWARM_PARAMS['bound_low'] for i in range(PARAMS['num_x'])],
           [SWARM_PARAMS['bound_high'] for i in range(PARAMS['num_x'])]]
+
 SWARM = pso.Swarm(SWARM_PARAMS['n_particles'], PARAMS['num_x'],
                   fitness, BOUNDS)
+
 SWARM.run_anim(SWARM_PARAMS['n_steps'])
 PLT = plot_data(SWARM.best[0])
-PLT.show()
+plt.show()
