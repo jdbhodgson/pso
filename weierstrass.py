@@ -36,18 +36,21 @@ def fitness(points):
        implies better approximation
     '''
 
-    if parity == 'odd':
+    if params['parity'] == 'odd':
         y_ext = extend_odd(points)
-    elif parity == 'even':
+    elif params['parity'] == 'even':
         y_ext = extend_even(points)
     x_ext = extend_odd(x)
 
     tck = splrep(x_ext, y_ext)
 
-    G_func = np.empty(num_a) * 0
+    G_func = np.empty(params['num_a']) * 0
 
-    for i in range(num_a):
-        x_a = np.linspace(A[i]-cutoff, A[i]+cutoff, num=num_a)
+    for i in range(params['num_a']):
+        x_a = np.linspace(A[i]-params['cutoff'],
+                          A[i]+params['cutoff'],
+                          num=params['num_a'])
+
         Kernel = np.exp(-(x_a-A[i])**2/2.)/(np.sqrt(2.*np.pi))
         G_func[i] = np.trapz(Kernel*splev(x_a, tck), x_a)
 
@@ -55,39 +58,13 @@ def fitness(points):
 
     return integral
 
-random.seed(12)
-
-A0 = 20.
-
-cutoff = 4
-num_x = 4
-num_a = 20
-
-config = configparser.ConfigParser()
-config.read('params.cfg')
-params = [float(config['WEIERSTRASS'][key])
-          for key in config['WEIERSTRASS']]
-x = np.linspace(0, 1, num=num_x+1)**2 *(A0 + cutoff)
-x = x[1:]
-parity = 'odd'
-
-A = np.linspace(-A0, A0, num=num_a)
-Target = np.tanh(A*0.45)
-
-x2 = np.linspace(-A0-cutoff, A0+cutoff, num=301)
-
-lower_bound, upper_bound = 0, 2
-bounds = [[lower_bound for i in range(num_x)],
-          [upper_bound for i in range(num_x)]]
-swarm = pso.Swarm(20, num_x, fitness, bounds)
-
-def plotData(pos):
+def plot_data(pos):
 
     fig = plt.figure()
     y = pos
-    if parity == 'odd':
+    if params['parity'] == 'odd':
         yExt = extend_odd(y)
-    elif parity == 'even':
+    elif params['parity'] == 'even':
         yExt = extend_even(y)
 
     xExt = extend_odd(x)
@@ -106,3 +83,34 @@ def plotData(pos):
     #   plt.show()
     #
     return fig
+
+random.seed(12)
+
+config = configparser.ConfigParser()
+config.read('params.cfg')
+params = dict(config['WEIERSTRASS'])
+params_types = dict(config['WEIERSTRASS_TYPES'])
+for key in params:
+    if params_types[key] == 'int':
+        params[key] = int(params[key])
+    elif params_types[key] == 'float':
+        params[key] = float(params[key])
+
+x_range = params['a_range'] + params['cutoff']
+x = np.linspace(0, 1, num=params['num_x']+1)**2 * x_range
+x = x[1:]
+parity = params['parity']
+
+A = np.linspace(-params['a_range'], params['a_range'],
+                num=params['num_a'])
+Target = np.tanh(A*0.45)
+
+x2 = np.linspace(-x_range, x_range, num=301)
+
+lower_bound, upper_bound = 0, 2
+bounds = [[lower_bound for i in range(params['num_x'])],
+          [upper_bound for i in range(params['num_x'])]]
+swarm = pso.Swarm(20, params['num_x'], fitness, bounds)
+swarm.run_anim(1000)
+plt = plot_data(swarm.best[0])
+plt.show()
