@@ -18,8 +18,17 @@ class Animator(object):
     '''
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self):
-        self.fig, self.axis = plt.subplots()
+    def __init__(self, plot_best=None, swarm=None):
+        self.plot_best = plot_best
+        self.swarm = swarm
+        if plot_best:
+            self.fig, self.axes = plt.subplots(1, 2)
+            self.fig.set_size_inches(12, 6)
+            self.axis = self.axes[0]
+            self.axis2 = self.axes[1]
+            plot_best(swarm.best[0], self.axis2)
+        else:
+            self.fig, self.axis = plt.subplots()
         self.line, = self.axis.plot([], [], lw=2)
         self.axis.grid()
         self.xdata, self.ydata = [], []
@@ -57,6 +66,9 @@ class Animator(object):
 
         self.line.set_data(self.xdata, self.ydata)
         self.axis.set_yscale(self.yscale)
+        if self.plot_best:
+            self.axis2.clear()
+            self.plot_best(self.swarm.best[0], self.axis2)
 
         return self.line,
 
