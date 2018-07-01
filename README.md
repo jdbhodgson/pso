@@ -7,6 +7,21 @@ The python3 program weierstrass.py will find approximate solutions for the inver
 The function target_function should be edited to represent G(A), all other parameters should be edited in
 the config file params.cfg.
 
+By default weierstrass.py will attempt to find approximations for f(x) when G(A) = tanh(0.45\*A). There are
+three running options at the bottom of the file:
+
+### 1) Run verbose, no visualisations (fastest)
+Will run the particle swarm optimiser with no visualisations, outputting only the percent completion.
+This can be further sped up by choosing verbose=False.
+
+### 2) Run with running history (slow)
+Runs the optimiser outputting a running history of the best fitness of the swarm. The overhead of plotting
+a graph every iteration makes this significantly slower than option 1. However it is useful for visualising
+the progress of the optimiser and running tests.
+
+### 3) Run with running history and best particle (slowest)
+Same as option 2 but also outputs a plot with the best f(x) found so far. 
+
 ## params.cfg
 This is the main parameter file that should be adjusted before running weierstrass.py.
 
