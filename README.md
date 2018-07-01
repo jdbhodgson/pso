@@ -1,10 +1,10 @@
 # A patricle swarm optimisation approach to finding approximate inverse Weierstrass Transforms
 
-Givea a function f(a), find G(x) such that W[G(x)] = f(a) (where W is the Weierstrass Transform)
+Given a function G(A), find f(x) such that W[f(x)] = G(A) (where W is the Weierstrass Transform)
 
 ## weierstrass.py
 The python3 program weierstrass.py will find approximate solutions for the inverse Weierstrass Transform.
-The function target_function should be edited to represent f(a), all other parameters should be edited in
+The function target_function should be edited to represent G(A), all other parameters should be edited in
 the config file params.cfg.
 
 ## params.cfg
