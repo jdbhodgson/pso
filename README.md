@@ -5,7 +5,7 @@ Givea a function f(a), find G(x) such that W[G(x)] = f(a) (where W is the Weiers
 ## weierstrass.py
 The python3 program weierstrass.py will find approximate solutions for the inverse Weierstrass Transform.
 The function target_function should be edited to represent f(a), all other parameters should be edited in
-the config file params.cfh
+the config file params.cfg.
 
 ## params.cfg
 This is the main parameter file that should be adjusted before running weierstrass.py.
@@ -53,6 +53,6 @@ PARITY = odd # parity of target function (odd or even)
 
 DISTRIBUTION = square # how the spline points are distributed
 
-#### types
+#### TYPES
 The 'types' parameters encode how python should read in the above values and should not need to be changed 
 
