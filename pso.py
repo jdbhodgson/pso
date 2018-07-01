@@ -20,8 +20,8 @@ class Swarm(object):
     def __init__(self, swarm_size, p_dim, function, bounds):
         config = configparser.ConfigParser()
         config.read('params.cfg')
-        hyperparams = [float(config['DEFAULT'][key])
-                       for key in config['DEFAULT']]
+        hyperparams = [float(config['HYPERPARAMS'][key])
+                       for key in config['HYPERPARAMS']]
 
         self.swarm_size = swarm_size   # int - swarm size
         self.p_dim = p_dim   # int - particle dimension
