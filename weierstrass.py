@@ -92,7 +92,7 @@ def plot_data(pos, axis):
     spline_data = splrep(x_ext, y_ext)
 
     axis.plot(x, y, 'o', X_FINE, splev(X_FINE, spline_data),
-             '-', color='black')
+              '-', color='black')
 
     # if plotSave == 'save':
     #
@@ -169,4 +169,6 @@ SWARM = pso.Swarm(SWARM_PARAMS['n_particles'], PARAMS['num_x'],
 
 # 3) Run with fitness history visualisation and running best (slowest)
 SWARM.run_anim(SWARM_PARAMS['n_steps'], plot_best=plot_data)
-
+FIG, AXIS = plt.subplots()
+plot_data(SWARM.best[0], AXIS)
+plt.show()

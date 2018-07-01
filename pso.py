@@ -88,8 +88,7 @@ class Swarm(object):
     def run_anim(self, n_steps, plot_best=None):
         '''
             Advances the swarm by N PSO steps, while
-            showing the swarm best history
-            
+            showing the swarm best history.
             if plot_best is given, it should be a function which
             takes as arguments a plot axis and a list of points
             (position of a particle). Then run_anim will plot the

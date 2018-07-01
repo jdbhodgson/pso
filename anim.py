@@ -22,8 +22,8 @@ class Animator(object):
         self.plot_best = plot_best
         self.swarm = swarm
         if plot_best:
-            self.fig, self.axes = plt.subplots(1,2)
-            self.fig.set_size_inches(12,6)
+            self.fig, self.axes = plt.subplots(1, 2)
+            self.fig.set_size_inches(12, 6)
             self.axis = self.axes[0]
             self.axis2 = self.axes[1]
             plot_best(swarm.best[0], self.axis2)
