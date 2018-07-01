@@ -17,8 +17,10 @@ def target_function(s):
     y = np.tanh(s*0.45)
     return y
 
-def extend_odd(y):
+def extend_odd(y, parity):
     '''Creates an odd extention of an array'''
+    if parity == 'even':
+        y = y[1:]
     y_odd = -np.flipud(y)
     y_odd = np.append(y_odd, 0)
     y = np.append(y_odd, y)
@@ -45,10 +47,15 @@ def fitness(points):
     '''
 
     if PARAMS['parity'] == 'odd':
-        y_ext = extend_odd(points)
+        y_ext = extend_odd(points, PARAMS['parity'])
     elif PARAMS['parity'] == 'even':
         y_ext = extend_even(points)
-    x_ext = extend_odd(x)
+    else:
+        y_ext = y
+    if PARAMS['parity'] == 'odd' or PARAMS['parity'] == 'even':
+        x_ext = extend_odd(x, PARAMS['parity'])
+    else:
+        x_ext = x
 
     spline_data = splrep(x_ext, y_ext)
 
@@ -76,11 +83,11 @@ def plot_data(pos):
     fig = plt.figure()
     y = pos
     if PARAMS['parity'] == 'odd':
-        y_ext = extend_odd(y)
+        y_ext = extend_odd(y, PARAMS['parity'])
     elif PARAMS['parity'] == 'even':
         y_ext = extend_even(y)
 
-    x_ext = extend_odd(x)
+    x_ext = extend_odd(x, PARAMS['parity'])
     spline_data = splrep(x_ext, y_ext)
 
     plt.plot(x, y, 'o', X_FINE, splev(X_FINE, spline_data), '-', color='black')
@@ -117,15 +124,27 @@ CONFIG = configparser.ConfigParser()
 CONFIG.read('params.cfg')
 PARAMS = convert_config_types(CONFIG, 'WEIERSTRASS')
 
-X_RANGE = PARAMS['a_range'] + PARAMS['cutoff']
-x = np.linspace(0, 1, num=PARAMS['num_x']+1)**2 * X_RANGE
-x = x[1:]
+if PARAMS['parity'] == 'odd' or PARAMS['parity'] == 'even':
 
-A = np.linspace(-PARAMS['a_range'], PARAMS['a_range'],
-                num=PARAMS['num_a'])
+    X_RANGE = PARAMS['a_range'] + PARAMS['cutoff']
+    
+    if PARAMS['distribution'] == 'square':
+        x = np.linspace(0, 1, num=PARAMS['num_x']+1)**2 * X_RANGE
+    else:
+        x = np.linspace(0, 1, num=PARAMS['num_x']+1) * X_RANGE
+
+    if PARAMS['parity'] == 'even':
+        PARAMS['num_x'] += 1
+    else:
+        x=x[1:]
+
+    A = np.linspace(-PARAMS['a_range'], PARAMS['a_range'],
+                    num=PARAMS['num_a'])
+                    
+    X_FINE = np.linspace(-X_RANGE, X_RANGE, num=301)
+
 TARGET = target_function(A)
 
-X_FINE = np.linspace(-X_RANGE, X_RANGE, num=301)
 
 SWARM_PARAMS = convert_config_types(CONFIG, 'SWARM')
 
