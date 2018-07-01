@@ -9,13 +9,13 @@ from scipy.interpolate import splev, splrep
 import matplotlib.pyplot as plt
 import pso
 
-def target_function(s):
+def target_function(t):
     '''
         The Target function of which to find the
         inverse Weierstrass transform
     '''
-    y = np.tanh(s*0.45)
-    return y
+    f = np.tanh(t*0.45)
+    return f
 
 def extend_odd(y, parity):
     '''Creates an odd extention of an array'''
@@ -51,7 +51,7 @@ def fitness(points):
     elif PARAMS['parity'] == 'even':
         y_ext = extend_even(points)
     else:
-        y_ext = y
+        y_ext = points
     if PARAMS['parity'] == 'odd' or PARAMS['parity'] == 'even':
         x_ext = extend_odd(x, PARAMS['parity'])
     else:
@@ -127,7 +127,7 @@ PARAMS = convert_config_types(CONFIG, 'WEIERSTRASS')
 if PARAMS['parity'] == 'odd' or PARAMS['parity'] == 'even':
 
     X_RANGE = PARAMS['a_range'] + PARAMS['cutoff']
-    
+
     if PARAMS['distribution'] == 'square':
         x = np.linspace(0, 1, num=PARAMS['num_x']+1)**2 * X_RANGE
     else:
@@ -136,11 +136,11 @@ if PARAMS['parity'] == 'odd' or PARAMS['parity'] == 'even':
     if PARAMS['parity'] == 'even':
         PARAMS['num_x'] += 1
     else:
-        x=x[1:]
+        x = x[1:]
 
     A = np.linspace(-PARAMS['a_range'], PARAMS['a_range'],
                     num=PARAMS['num_a'])
-                    
+
     X_FINE = np.linspace(-X_RANGE, X_RANGE, num=301)
 
 TARGET = target_function(A)
