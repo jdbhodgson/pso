@@ -3,13 +3,12 @@
    to find the inverse Weierstrass transform of a given function
 '''
 import random
-import numpy as np
 import configparser
-from scipy.interpolate import interp1d
-from scipy.interpolate import CubicSpline
+import numpy as np
 from scipy.interpolate import splev, splrep
 import matplotlib.pyplot as plt
 import pso
+
 
 def extend_odd(y):
     '''Creates an odd extention of an array'''
@@ -17,6 +16,7 @@ def extend_odd(y):
     y_odd = np.append(y_odd, 0)
     y = np.append(y_odd, y)
     return y
+
 
 def extend_even(y):
     '''Creates an even extention of an array'''
@@ -28,6 +28,7 @@ def extend_even(y):
 
     return y
 
+
 def fitness(points):
     '''
        Evaluates how well a list approximates a solution
@@ -36,81 +37,84 @@ def fitness(points):
        implies better approximation
     '''
 
-    if params['parity'] == 'odd':
+    if PARAMS['parity'] == 'odd':
         y_ext = extend_odd(points)
-    elif params['parity'] == 'even':
+    elif PARAMS['parity'] == 'even':
         y_ext = extend_even(points)
     x_ext = extend_odd(x)
 
-    tck = splrep(x_ext, y_ext)
+    spline_data = splrep(x_ext, y_ext)
 
-    G_func = np.empty(params['num_a']) * 0
+    G = np.empty(PARAMS['num_a']) * 0
 
-    for i in range(params['num_a']):
-        x_a = np.linspace(A[i]-params['cutoff'],
-                          A[i]+params['cutoff'],
-                          num=params['num_a'])
+    for i in range(PARAMS['num_a']):
+        x_a = np.linspace(A[i]-PARAMS['cutoff'],
+                          A[i]+PARAMS['cutoff'],
+                          num=PARAMS['num_a'])
 
-        Kernel = np.exp(-(x_a-A[i])**2/2.)/(np.sqrt(2.*np.pi))
-        G_func[i] = np.trapz(Kernel*splev(x_a, tck), x_a)
+        kernel = np.exp(-(x_a-A[i])**2/2.)/(np.sqrt(2.*np.pi))
+        G[i] = np.trapz(kernel*splev(x_a, spline_data), x_a)
 
-    integral = np.trapz((G_func-Target)**2, A)
+    integral = np.trapz((G-TARGET)**2, A)
 
     return integral
 
+
 def plot_data(pos):
+    '''
+        Converts a list of spline points (pos) to its
+        spline representation and plots the resulting curve.
+    '''
 
     fig = plt.figure()
     y = pos
-    if params['parity'] == 'odd':
-        yExt = extend_odd(y)
-    elif params['parity'] == 'even':
-        yExt = extend_even(y)
+    if PARAMS['parity'] == 'odd':
+        y_ext = extend_odd(y)
+    elif PARAMS['parity'] == 'even':
+        y_ext = extend_even(y)
 
-    xExt = extend_odd(x)
-    tck = splrep(xExt, yExt)
+    x_ext = extend_odd(x)
+    spline_data = splrep(x_ext, y_ext)
 
-    plt.plot(x, y, 'o', x2, splev(x2, tck), '-', color='black')
+    plt.plot(x, y, 'o', X_FINE, splev(X_FINE, spline_data), '-', color='black')
 
-    #if plotSave == 'save':
+    # if plotSave == 'save':
     #
-    #   fig.savefig( num_ame + '.png', dpi=fig.dpi)
+    #    fig.savefig( num_ame + '.png', dpi=fig.dpi)
     #
-    #   plt.close(fig)
+    #    plt.close(fig)
     #
-    #else:
+    # else:
     #
-    #   plt.show()
+    #    plt.show()
     #
     return fig
 
 random.seed(12)
 
-config = configparser.ConfigParser()
-config.read('params.cfg')
-params = dict(config['WEIERSTRASS'])
-params_types = dict(config['WEIERSTRASS_TYPES'])
-for key in params:
-    if params_types[key] == 'int':
-        params[key] = int(params[key])
-    elif params_types[key] == 'float':
-        params[key] = float(params[key])
+CONFIG = configparser.ConfigParser()
+CONFIG.read('params.cfg')
+PARAMS = dict(CONFIG['WEIERSTRASS'])
+PARAMS_TYPES = dict(CONFIG['WEIERSTRASS_TYPES'])
+for key in PARAMS:
+    if PARAMS_TYPES[key] == 'int':
+        PARAMS[key] = int(PARAMS[key])
+    elif PARAMS_TYPES[key] == 'float':
+        PARAMS[key] = float(PARAMS[key])
 
-x_range = params['a_range'] + params['cutoff']
-x = np.linspace(0, 1, num=params['num_x']+1)**2 * x_range
+X_RANGE = PARAMS['a_range'] + PARAMS['cutoff']
+x = np.linspace(0, 1, num=PARAMS['num_x']+1)**2 * X_RANGE
 x = x[1:]
-parity = params['parity']
 
-A = np.linspace(-params['a_range'], params['a_range'],
-                num=params['num_a'])
-Target = np.tanh(A*0.45)
+A = np.linspace(-PARAMS['a_range'], PARAMS['a_range'],
+                num=PARAMS['num_a'])
+TARGET = np.tanh(A*0.45)
 
-x2 = np.linspace(-x_range, x_range, num=301)
+X_FINE = np.linspace(-X_RANGE, X_RANGE, num=301)
 
-lower_bound, upper_bound = 0, 2
-bounds = [[lower_bound for i in range(params['num_x'])],
-          [upper_bound for i in range(params['num_x'])]]
-swarm = pso.Swarm(20, params['num_x'], fitness, bounds)
-swarm.run_anim(1000)
-plt = plot_data(swarm.best[0])
-plt.show()
+BOUNDS = [[PARAMS['bound_low'] for i in range(PARAMS['num_x'])],
+          [PARAMS['bound_high'] for i in range(PARAMS['num_x'])]]
+SWARM = pso.Swarm(20, PARAMS['num_x'], fitness, BOUNDS)
+SWARM.run_anim(1000)
+PLT = plot_data(SWARM.best[0])
+PLT.show()
