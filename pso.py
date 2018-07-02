@@ -98,6 +98,8 @@ class Swarm(object):
         animator.xrange_0 = (0, 10)
         animator.yrange_0 = (self.best[1]/10, self.best[1])
         animator.yscale = 'log'
+        animator.axis.set_xlabel('step')
+        animator.axis.set_ylabel('fitness')
         def data_gen(t=0):
             '''Completes one PSO step, and outputs history'''
             i = 0
