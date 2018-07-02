@@ -127,15 +127,16 @@ PARAMS = convert_config_types(CONFIG, 'WEIERSTRASS')
 if PARAMS['parity'] == 'odd' or PARAMS['parity'] == 'even':
 
     X_RANGE = PARAMS['a_range'] + PARAMS['cutoff']
-
+    if PARAMS['parity'] == 'odd':
+        NUM = PARAMS['num_x'] + 1
+    else:
+        NUM = PARAMS['num_x']
     if PARAMS['distribution'] == 'square':
-        x = np.linspace(0, 1, num=PARAMS['num_x']+1)**2 * X_RANGE
+        x = np.linspace(0, 1, num=NUM)**2 * X_RANGE
     else:
-        x = np.linspace(0, 1, num=PARAMS['num_x']+1) * X_RANGE
+        x = np.linspace(0, 1, num=NUM) * X_RANGE
 
-    if PARAMS['parity'] == 'even':
-        PARAMS['num_x'] += 1
-    else:
+    if PARAMS['parity'] == 'odd':
         x = x[1:]
 
     A = np.linspace(-PARAMS['a_range'], PARAMS['a_range'],
