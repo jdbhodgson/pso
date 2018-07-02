@@ -210,7 +210,7 @@ def benchmark(n_steps):
     start_time = time.time()
     swarm.run(n_steps)
 
-    print('Swarm min = %e', swarm.best[1])
+    print('Swarm min = %e' % swarm.best[1])
     end_time = round(time.time()-start_time, 4)
     print('Completed in %f seconds.' % end_time)
     return swarm
