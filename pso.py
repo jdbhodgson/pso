@@ -239,3 +239,17 @@ def test_function(variables):
     return (4-cos(x)-cos(y)
             -cos(z)-cos(t)
             +(x**2+y**2+z**2+t**2)/100.)
+
+class MultiSwarm(object):
+    '''
+        
+    '''
+
+    def __init__(self, swarms):
+        self.swarms = swarms
+        self.n_swarms = len(swarms)
+
+    def run(self, n_steps):
+        for i in range(self.n_swarms):
+            self.swarms[i].run(n_steps, verbose=True)
+            

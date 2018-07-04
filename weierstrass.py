@@ -153,9 +153,11 @@ random.seed(SWARM_PARAMS['seed'])
 BOUNDS = [[SWARM_PARAMS['bound_low'] for i in range(PARAMS['num_x'])],
           [SWARM_PARAMS['bound_high'] for i in range(PARAMS['num_x'])]]
 
-SWARM = pso.Swarm(SWARM_PARAMS['n_particles'], PARAMS['num_x'],
-                  fitness, BOUNDS)
+SWARMS = [pso.Swarm(SWARM_PARAMS['n_particles'], PARAMS['num_x'],
+                  fitness, BOUNDS) for i in range(10)]
 
+MULTISWARM = pso.MultiSwarm(SWARMS)
+MULTISWARM.run(200)
 # 1) Run without any visualisation (fastest)
 #SWARM.run(SWARM_PARAMS['n_steps'], verbose=True)
 #fig, axis = plt.subplots()
@@ -169,7 +171,7 @@ SWARM = pso.Swarm(SWARM_PARAMS['n_particles'], PARAMS['num_x'],
 #plt.show()
 
 # 3) Run with fitness history visualisation and running best (slowest)
-SWARM.run_anim(SWARM_PARAMS['n_steps'], plot_best=plot_data)
-FIG, AXIS = plt.subplots()
-plot_data(SWARM.best[0], AXIS)
-plt.show()
+#SWARM.run_anim(SWARM_PARAMS['n_steps'], plot_best=plot_data)
+#FIG, AXIS = plt.subplots()
+#plot_data(SWARM.best[0], AXIS)
+#plt.show()
