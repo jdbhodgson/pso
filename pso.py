@@ -10,6 +10,7 @@ from math import cos
 import matplotlib.pyplot as plt
 import anim
 
+
 class Swarm(object):
     '''
         The main Swarm class consists of a collection of particles,
@@ -37,7 +38,7 @@ class Swarm(object):
                           for j in range(swarm_size)]
         self.history = [self.best[1]]
         # Ring topology
-        self.groups = [[self.particles[(i+j)%swarm_size]
+        self.groups = [[self.particles[(i+j) % swarm_size]
                         for i in range(-1, 2)]
                        for j in range(swarm_size)]
         self.update_swarm_g()
@@ -76,7 +77,7 @@ class Swarm(object):
                     out = '%6.2f%% Complete' % round(100*i/n_steps, 2)
                     sys.stdout.write('\r' + out)
                     sys.stdout.flush()
-                elif i%round(n_steps/500):
+                elif i % round(n_steps/500):
                     out = '%6.2f%% Complete' % round(100*i/n_steps, 2)
                     sys.stdout.write('\r' + out)
                     sys.stdout.flush()
@@ -101,6 +102,7 @@ class Swarm(object):
         animator.yscale = 'log'
         animator.axis.set_xlabel('step')
         animator.axis.set_ylabel('fitness')
+
         def data_gen(t=0):
             '''Completes one PSO step, and outputs history'''
             i = 0
@@ -111,8 +113,6 @@ class Swarm(object):
                 i += 1
                 t += 1
                 yield t, self.best[1]
-
-        #animator.data_gen = data_gen(self)
 
         animator.animate(data_gen)
 
@@ -127,6 +127,7 @@ class Swarm(object):
 
         plt.show(fig)
 
+
 class Particle(object):
     '''
         A python class for a particle within the swarm. Updates
@@ -140,14 +141,14 @@ class Particle(object):
         self.j = j
         self.swarm = swarm
         p_dim = swarm.p_dim
-        self.x = [random.random()*swarm.range[i]
-                  + swarm.b_lo[i] for i in range(p_dim)]
-        self.v = [2*random.random()*swarm.range[i]
-                  - swarm.range[i] for i in range(p_dim)]
+        self.x = [random.random()*swarm.range[i] +
+                  swarm.b_lo[i] for i in range(p_dim)]
+        self.v = [2*random.random()*swarm.range[i] -
+                  swarm.range[i] for i in range(p_dim)]
 
         self.vmax = [0.2*swarm.range[i] for i in range(p_dim)]
         self.p_best = (list(self.x), swarm.function(self.x))
-        if (not swarm.best[1]) or  self.p_best[1] < swarm.best[1]:
+        if (not swarm.best[1]) or self.p_best[1] < swarm.best[1]:
             swarm.best = self.p_best
         self.g_best = self.p_best
         self.omega = hyperparams[0]
@@ -166,9 +167,9 @@ class Particle(object):
         for i in range(self.swarm.p_dim):
             r_p = random.random()
             r_g = random.random()
-            self.v[i] = (self.omega*self.v[i]
-                         + r_p*self.phi_p*(self.p_best[0][i]-self.x[i])
-                         + r_g*self.phi_g*(self.g_best[0][i]-self.x[i]))
+            self.v[i] = (self.omega*self.v[i] +
+                         r_p*self.phi_p*(self.p_best[0][i]-self.x[i]) +
+                         r_g*self.phi_g*(self.g_best[0][i]-self.x[i]))
             if self.v[i] > self.vmax[i]:
                 self.v[i] = self.vmax[i]
             elif self.v[i] < -self.vmax[i]:
@@ -218,6 +219,7 @@ def benchmark(n_steps):
     print('Completed in %f seconds.' % end_time)
     return swarm
 
+
 def test_swarm():
     ''' Creates a swarm object for benchmarking and unit tests.
         Returns a swarm of 20 particles in 4 dimensions, with
@@ -229,6 +231,7 @@ def test_swarm():
                    [10 for i in range(4)]])
     return swarm
 
+
 def test_function(variables):
     ''' Test function for benchmarking and unit tests.
         Takes a 4 element list as its only argument.
@@ -237,30 +240,29 @@ def test_function(variables):
         f has a minimum at f([0,0,0,0]) = 0.
     '''
     x, y, z, t = variables
-    return (4-cos(x)-cos(y)
-            -cos(z)-cos(t)
-            +(x**2+y**2+z**2+t**2)/100.)
+    return (4 - cos(x) - cos(y) -
+            cos(z) - cos(t) +
+            (x**2 + y**2 + z**2 + t**2)/100.)
+
 
 class MultiSwarm(object):
     '''
-        
     '''
-
     def __init__(self, swarms):
         self.swarms = swarms
         self.n_swarms = len(swarms)
 
     def do_it(self, n_processes):
-    
+
         start_time = time.time()
         print('Initialising...')
         queue = Queue()
         processes = [Process(target=self.run_swarm, args=(queue,))
                      for i in range(n_processes)]
-
+        print(__name__)
         for process in processes:
             process.start()
-            
+
         end_time = round(time.time()-start_time, 4)
         print('Initialised in %f seconds.' % end_time)
         start_time = time.time()
@@ -268,7 +270,7 @@ class MultiSwarm(object):
         for i in range(self.n_swarms):
             queue.put(i)
 
-        for process in processes:        
+        for process in processes:
             queue.put(-1)
 
         for process in processes:
@@ -280,7 +282,7 @@ class MultiSwarm(object):
     def run_swarm(self, queue):
         i = ''
         while True:
-            i=queue.get()
+            i = queue.get()
             if i < 0:
                 break
             self.swarms[i].run(100)
