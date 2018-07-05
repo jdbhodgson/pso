@@ -154,10 +154,10 @@ BOUNDS = [[SWARM_PARAMS['bound_low'] for i in range(PARAMS['num_x'])],
           [SWARM_PARAMS['bound_high'] for i in range(PARAMS['num_x'])]]
 
 SWARMS = [pso.Swarm(SWARM_PARAMS['n_particles'], PARAMS['num_x'],
-                  fitness, BOUNDS) for i in range(10)]
+                  fitness, BOUNDS) for i in range(20)]
 
 MULTISWARM = pso.MultiSwarm(SWARMS)
-MULTISWARM.run(200)
+#MULTISWARM.run(200)
 # 1) Run without any visualisation (fastest)
 #SWARM.run(SWARM_PARAMS['n_steps'], verbose=True)
 #fig, axis = plt.subplots()

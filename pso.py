@@ -4,6 +4,7 @@
 import sys
 import time
 import random
+from multiprocessing import Process, Queue
 import configparser
 from math import cos
 import matplotlib.pyplot as plt
@@ -249,7 +250,37 @@ class MultiSwarm(object):
         self.swarms = swarms
         self.n_swarms = len(swarms)
 
-    def run(self, n_steps):
-        for i in range(self.n_swarms):
-            self.swarms[i].run(n_steps, verbose=True)
+    def do_it(self, n_processes):
+    
+        start_time = time.time()
+        print('Initialising...')
+        queue = Queue()
+        processes = [Process(target=self.run_swarm, args=(queue,))
+                     for i in range(n_processes)]
+
+        for process in processes:
+            process.start()
             
+        end_time = round(time.time()-start_time, 4)
+        print('Initialised in %f seconds.' % end_time)
+        start_time = time.time()
+
+        for i in range(self.n_swarms):
+            queue.put(i)
+
+        for process in processes:        
+            queue.put(-1)
+
+        for process in processes:
+            process.join()
+
+        end_time = round(time.time()-start_time, 4)
+        print('Completed in %f seconds.' % end_time)
+
+    def run_swarm(self, queue):
+        i = ''
+        while True:
+            i=queue.get()
+            if i < 0:
+                break
+            self.swarms[i].run(100)
