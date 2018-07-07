@@ -80,8 +80,6 @@ def plot_data(pos, axis):
         Converts a list of spline points (pos) to its
         spline representation and plots the resulting curve.
     '''
-
-    #fig = plt.figure()
     y = pos
     if PARAMS['parity'] == 'odd':
         y_ext = extend_odd(y, PARAMS['parity'])
@@ -154,32 +152,32 @@ BOUNDS = [[SWARM_PARAMS['bound_low'] for i in range(PARAMS['num_x'])],
           [SWARM_PARAMS['bound_high'] for i in range(PARAMS['num_x'])]]
 
 SWARMS = [pso.Swarm(SWARM_PARAMS['n_particles'], PARAMS['num_x'],
-                  fitness, BOUNDS) for i in range(20)]
+                    fitness, BOUNDS) for i in range(20)]
 
 if __name__ == '__main__':
     MULTISWARM = pso.MultiSwarm(SWARMS)
-    MULTISWARM.do_it(4)
+    MULTISWARM.run_multiswarm(100, 4)
 
     fig, ax = plt.subplots()
     for swarm in MULTISWARM.swarms:
         ax.plot(swarm.history)
     ax.semilogy()
-    plt.show()    
-#MULTISWARM.run(200)
-# 1) Run without any visualisation (fastest)
-#SWARM.run(SWARM_PARAMS['n_steps'], verbose=True)
-#fig, axis = plt.subplots()
-#plot_data(SWARM.best[0], axis)
-#plt.show()
+    plt.show()
 
-# 2) Run with fitness history visualisation (slower)
-#SWARM.run_anim(SWARM_PARAMS['n_steps'])
-#fig, axis = plt.subplots()
-#plot_data(SWARM.best[0], axis)
-#plt.show()
+# #1) Run without any visualisation (fastest)
+# SWARM.run(SWARM_PARAMS['n_steps'], verbose=True)
+# fig, axis = plt.subplots()
+# plot_data(SWARM.best[0], axis)
+# plt.show()
 
-# 3) Run with fitness history visualisation and running best (slowest)
-#SWARM.run_anim(SWARM_PARAMS['n_steps'], plot_best=plot_data)
-#FIG, AXIS = plt.subplots()
-#plot_data(SWARM.best[0], AXIS)
-#plt.show()
+# #2) Run with fitness history visualisation (slower)
+# SWARM.run_anim(SWARM_PARAMS['n_steps'])
+# fig, axis = plt.subplots()
+# plot_data(SWARM.best[0], axis)
+# plt.show()
+
+# #3) Run with fitness history visualisation and running best (slowest)
+# SWARM.run_anim(SWARM_PARAMS['n_steps'], plot_best=plot_data)
+# FIG, AXIS = plt.subplots()
+# plot_data(SWARM.best[0], AXIS)
+# plt.show()

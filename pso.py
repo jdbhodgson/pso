@@ -247,20 +247,25 @@ def test_function(variables):
 
 class MultiSwarm(object):
     '''
+        A python class for handling multiple swarms simultaneously
+        using multiprocessing.
     '''
     def __init__(self, swarms):
         self.swarms = swarms
         self.n_swarms = len(swarms)
 
-    def do_it(self, n_processes):
-
+    def run_multiswarm(self, n_steps, n_processes):
+        '''
+            Progresses all swarms in the multiswarm by n_steps steps,
+            using n_processes processes.
+        '''
         start_time = time.time()
         print('Initialising...')
         queue = Queue()
         parent_conn, child_conn = Pipe()
 
         processes = [Process(target=self.run_swarm,
-                     args=(child_conn, queue))
+                             args=(n_steps, child_conn, queue))
                      for i in range(n_processes)]
 
         for i in range(self.n_swarms):
@@ -270,6 +275,7 @@ class MultiSwarm(object):
             queue.put(-1)
         for i in range(self.n_swarms):
             j, swarm = parent_conn.recv()
+            print("Completed swarm %d" % j)
             self.swarms[j] = swarm
         for process in processes:
             process.join()
@@ -277,11 +283,14 @@ class MultiSwarm(object):
         end_time = round(time.time()-start_time, 4)
         print('Completed in %f seconds.' % end_time)
 
-    def run_swarm(self, conn, queue):
-        i = ''
+    def run_swarm(self, n_steps, conn, queue):
+        '''
+            Progresses the ith swarm in the multiswarm by n_steps steps.
+            Pipes the result back to the parent process
+        '''
         while True:
             i = queue.get()
             if i < 0:
                 break
-            self.swarms[i].run(500)
+            self.swarms[i].run(n_steps)
             conn.send([i, self.swarms[i]])
